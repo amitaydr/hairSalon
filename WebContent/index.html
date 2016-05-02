@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+<meta charset="windows-1255">
+<title>Welcome to Wix hair salon!</title>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+</head>
+<h1 align="center">Welcome to Wix hair salon!</h1>
+<body background = "background.jpg">
+
+ <div ng-controller="myCtrl" align="center">
+        <form ng-submit="sendPost2()">
+            <button type="submit">get current open time slots</button>
+        </form>
+        <p>open time slots: {{schedule}}
+
+<form name="myForm" method="get" action="SalonServer">
+	First Name: <input type="text" name="fName" placeholder="enter your first name"><br><br>
+	Last Name: <input type="text" name="lName" placeholder="enter your last name"><br><br>
+	id: <input type="number" name="id" placeholder="enter your id"><br><br>
+	email: <input type="text" name="email" placeholder="enter your email"><br><br>
+	Service: <br>
+	<input type="radio" name="service" value="Bride treatment" checked>Bride treatment<br>
+	<input type="radio" name="service" value="Women haircut" >Women haircut<br>
+	<input type="radio" name="service" value="Men haicut" >Men haircut<br><br>	
+	Time:  <br>
+	<input type="dateTime" name="time"> <br><br>
+
+	<input type="submit" value="cheers"><br>
+	
+	updated services: 
+
+</form><br>
+
+	 <div ng-controller="myCtrl">
+        <form ng-submit="sendPost()">
+            <input ng-model="name" />
+            <button type="submit">Send</button>
+        </form>
+        <p>Message from servlet: {{message}}
+        
+   
+
+
+<img id="myImage" src="salon.jpg" width="275" height="183" align="right">
+
+<script>
+var helloAjaxApp = angular.module("myApp", []);
+
+helloAjaxApp.controller("myCtrl", [ '$scope', '$http', function($scope, $http) {
+ 
+    $http.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded; charset=utf-8";
+     
+    $scope.sendPost = function() {
+        $http({
+            url : 'http://localhost:8080/HairSalon/SalonServer',
+            method : "POST",
+            data : {
+                'name' : $scope.name
+            }
+        }).then(function(response) {
+            console.log(response.data);
+            $scope.message = response.data;
+        }, function(response) {
+            //fail case
+            console.log(response);
+            $scope.message = response;
+        });
+    };
+        
+        $scope.sendPost2 = function() {
+            $http({
+                url : 'http://localhost:8080/HairSalon/SalonServer',
+                method : "POST",
+                data : {
+                    'giveSchedule' : 'true'
+                }
+            }).then(function(response) {
+                console.log(response.data);
+                $scope.schedule = response.data;
+            }, function(response) {
+                //fail case
+                console.log(response);
+                $scope.schedule = response;
+            });
+ 
+    };
+} ]);
+</script>
+
+
+
+
+
+</body>
+</html>
