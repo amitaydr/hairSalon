@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import javax.servlet.ServletException;
@@ -102,6 +103,8 @@ public class SalonServer extends HttpServlet {
         int phoneNo=-1;
         String email="";
         String service="";
+        String timeSt="";
+        java.util.Date date = null;
         try {
 			if (jObj.has("fName")){
 				fname = jObj.getString("fName");
@@ -118,6 +121,10 @@ public class SalonServer extends HttpServlet {
 			if (jObj.has("service")){
 				service = jObj.getString("service");
 			}
+			if (jObj.has("time")){
+				timeSt = jObj.getString("time");
+				date = new SimpleDateFormat("yyyy-MM-dd").parse(timeSt);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();       
 		}
@@ -127,6 +134,7 @@ public class SalonServer extends HttpServlet {
         if(phoneNo != -1){
 			if (!dbcon.customerExists(phoneNo)){
     			dbcon.addCustomer(phoneNo,fname,lname,email);
+    			dbcon.addAppointment(phoneNo, new java.sql.Date(date.getTime()+1),service);
     		}else prefix="welcome back, ";
 			response.getWriter().write(prefix+ fname + " " +lname+ ", your booking for: " + service + " at: "+ " is approved!");
         } else {

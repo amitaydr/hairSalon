@@ -8,7 +8,50 @@
 <h1 align="center" style="font-family:Comic Sans MS;">Welcome to Wix Hair Salon!</h1>
 <body background = "background.jpg">
 
+
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1581863508809739',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+  
+  function testAPI() {
+	    console.log('Welcome!  Fetching your information.... ');
+	    FB.api('/me', function(response) {
+	      console.log('Successful login for: ' + response.name);
+	      document.getElementById('status').innerHTML =
+	        'Thanks for logging in, ' + response.name + '!';
+	    });
+	  }
+</script>
+
+
+
+
+
  <div ng-controller="myCtrl" align="center" style="font-family:Comic Sans MS;">
+ 
+<!-- <div class="fb-login-button" data-max-rows="1" data-size="medium" data-show-faces="false" data-auto-logout-link="true"></div>
+<div id="status">
+</div>
+ --> 
+ <fb:login-button scope="public_profile,email" onlogin="testAPI();">
+</fb:login-button>
+
+<div id="status">
+***
+</div>
         <form ng-submit="sendPost2()">
             <button type="submit">Available booking times</button>
         </form>
@@ -41,7 +84,8 @@
 	  		<label><input type="radio" ng-model="service" value="Bride treatment" />Bride treatment- 3 hours, 700 sheqels<br></label>
 			<label><input type="radio" ng-model="service" value="Women haircut" />Women haircut- 2 hours, 200 sheqels<br></label>
 			<label><input type="radio" ng-model="service" value="Men haicut" />Men haircut- 1 hour, 50 sheqels<br><br>	</label>
-             
+             Time:  <br>
+			<input type="date" ng-model="time"> <br><br>
             <button type="submit">Send</button>
         </form>
         <p> {{message}}
@@ -67,7 +111,8 @@ hairApp.controller("myCtrl", [ '$scope', '$http', function($scope, $http) {
                 'lName' : $scope.lName,
                 'phone' : $scope.phone,
                 'email' : $scope.fName,
-                'service' : $scope.service
+                'service' : $scope.service,
+                'time' : $scope.time
             }
         }).then(function(response) {
             console.log(response.data);

@@ -3,6 +3,7 @@ package db;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -73,6 +74,20 @@ public class DBconnector {
 		}
 		return ans;
 	}
+	
+	public void addAppointment(int id, java.sql.Date date, String service){
+		try {
+			PreparedStatement pst = con.prepareStatement("INSERT INTO hair.schedule (date,customerID,service) VALUE (?,?,?)");
+			pst.setDate(1,date);
+			pst.setInt(2,id);
+			pst.setString(3,service);
+			pst.execute();					
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	
+}
 	
 /*	public void newWeek(Date sunday){
 		String s = "";
