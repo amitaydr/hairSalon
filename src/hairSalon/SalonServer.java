@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import db.DBconnector;
 
-import org.json.JSONException;
 import org.json.*;
 
 
@@ -54,15 +53,15 @@ public class SalonServer extends HttpServlet {
 		String email = request.getParameter("email");
 		String datetime = request.getParameter("time");
 		PrintWriter out = response.getWriter();
-		String oldCustomer="";
+		String prefix="";
 		if (!dbcon.customerExists(id)){
 			dbcon.addCustomer(id,fName,lName,email);
-		}else oldCustomer="welcome back, ";
+		}else prefix="welcome back, ";
 		if(id==-1){
-			oldCustomer="id is not valid!";
+			prefix="id is not valid!";
 		}
 		out.println("<html><title>confirmation page</title><body><h1 align='center'>Thank you for choosing wix hair salon!</h1>"+
-				"<br>"+oldCustomer+fName+" "+lName+" , your booking for: "+service+ " at: "+datetime+" is approved.<br> have a nice day! </body></html>");
+				"<br>"+prefix+fName+" "+lName+" , your booking for: "+service+ " at: "+datetime+" is approved.<br> have a nice day! </body></html>");
 	}
 
 	/**
@@ -77,30 +76,62 @@ public class SalonServer extends HttpServlet {
             sb.append(str);
         }
         JSONObject jObj;
-        String name="not initialized";
         String scheduleReq="";
         try {
 			jObj = new JSONObject(sb.toString());
-			if (jObj.has("name")){
-				name = jObj.getString("name");
-			}
 			if (jObj.has("giveSchedule")){
 				scheduleReq = jObj.getString("giveSchedule");
+			} else {
+				form (jObj, response);  //handle a form
 			}
 		} catch (Exception e) {
-			System.err.println("*************in catch clause*************");
 			e.printStackTrace();       
 		}
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
-        if (name != "not initialized"){
-        	response.getWriter().write("hello from java. you entered : " + name);
-        }
         if(scheduleReq!=""){
         	String slots=dbcon.getTimeSlots();
         	response.getWriter().write(slots);
         }
 		  
+	}
+	
+	protected void form (JSONObject jObj, HttpServletResponse response) throws IOException{
+		String fname="";
+        String lname="";
+        int phoneNo=-1;
+        String email="";
+        String service="";
+        try {
+			if (jObj.has("fName")){
+				fname = jObj.getString("fName");
+			}
+			if (jObj.has("lName")){
+				lname = jObj.getString("lName");
+			}
+			if (jObj.has("phone")){
+				phoneNo = jObj.getInt("phone");
+			}
+			if (jObj.has("email")){
+				email = jObj.getString("email");
+			}
+			if (jObj.has("service")){
+				service = jObj.getString("service");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();       
+		}
+        response.setContentType("text/plain");
+        response.setCharacterEncoding("UTF-8");
+        String prefix="";
+        if(phoneNo != -1){
+			if (!dbcon.customerExists(phoneNo)){
+    			dbcon.addCustomer(phoneNo,fname,lname,email);
+    		}else prefix="welcome back, ";
+			response.getWriter().write(prefix+ fname + " " +lname+ ", your booking for: " + service + " at: "+ " is approved!");
+        } else {
+        	response.getWriter().write("you must enter a phone number to schedule an appointment!");
+        }
 	}
 
 }

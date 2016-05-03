@@ -2,52 +2,59 @@
 <html ng-app="myApp">
 <head>
 <meta charset="windows-1255">
-<title>Welcome to Wix hair salon!</title>
+<title>Welcome to Wix Hair Salon!</title>
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
 </head>
-<h1 align="center">Welcome to Wix hair salon!</h1>
+<h1 align="center" style="font-family:Comic Sans MS;">Welcome to Wix Hair Salon!</h1>
 <body background = "background.jpg">
 
- <div ng-controller="myCtrl" align="center">
+ <div ng-controller="myCtrl" align="center" style="font-family:Comic Sans MS;">
         <form ng-submit="sendPost2()">
-            <button type="submit">get current open time slots</button>
+            <button type="submit">Available booking times</button>
         </form>
-        <p>open time slots: {{schedule}}
-
+        <br> 
+        {{schedule}} <br> <br> 
+<!-- 
 <form name="myForm" method="get" action="SalonServer">
 	First Name: <input type="text" name="fName" placeholder="enter your first name"><br><br>
 	Last Name: <input type="text" name="lName" placeholder="enter your last name"><br><br>
-	id: <input type="number" name="id" placeholder="enter your id"><br><br>
-	email: <input type="text" name="email" placeholder="enter your email"><br><br>
-	Service: <br>
-	<input type="radio" name="service" value="Bride treatment" checked>Bride treatment<br>
-	<input type="radio" name="service" value="Women haircut" >Women haircut<br>
-	<input type="radio" name="service" value="Men haicut" >Men haircut<br><br>	
+	Phone no.: <input type="number" name="id" placeholder="enter your number"><br><br>
+	Email: <input type="text" name="email" placeholder="enter your email"><br><br>
+	Choose the service you would like to have: <br> <br>
+	<input type="radio" name="service" value="Bride treatment" checked>Bride treatment- 3 hours, 700 sheqels<br>
+	<input type="radio" name="service" value="Women haircut" >Women haircut- 2 hours, 200 sheqels<br>
+	<input type="radio" name="service" value="Men haicut" >Men haircut- 1 hour, 50 sheqels<br><br>	
 	Time:  <br>
 	<input type="dateTime" name="time"> <br><br>
 
 	<input type="submit" value="cheers"><br>
 	
-	updated services: 
 
 </form><br>
-
-	 <div ng-controller="myCtrl">
+ -->
+	
         <form ng-submit="sendPost()">
-            <input ng-model="name" />
+           First Name: <input type="text" ng-model="fName" placeholder="enter your first name" /><br><br>
+           Last Name: <input type="text" ng-model="lName" placeholder="enter your last name" /><br><br>
+			Phone no.: <input type="number" ng-model="phone" placeholder="enter your number" /><br><br>
+	  		Email: <input type="text" ng-model="email" placeholder="enter your email" /><br><br>
+	  		<label><input type="radio" ng-model="service" value="Bride treatment" />Bride treatment- 3 hours, 700 sheqels<br></label>
+			<label><input type="radio" ng-model="service" value="Women haircut" />Women haircut- 2 hours, 200 sheqels<br></label>
+			<label><input type="radio" ng-model="service" value="Men haicut" />Men haircut- 1 hour, 50 sheqels<br><br>	</label>
+             
             <button type="submit">Send</button>
         </form>
-        <p>Message from servlet: {{message}}
+        <p> {{message}}
         
    
 
 
-<img id="myImage" src="salon.jpg" width="275" height="183" align="right">
+<!--  <img id="myImage" src="salon.jpg" width="275" height="183" align="right">  -->
 
 <script>
-var helloAjaxApp = angular.module("myApp", []);
+var hairApp = angular.module("myApp", []);
 
-helloAjaxApp.controller("myCtrl", [ '$scope', '$http', function($scope, $http) {
+hairApp.controller("myCtrl", [ '$scope', '$http', function($scope, $http) {
  
     $http.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded; charset=utf-8";
      
@@ -56,7 +63,11 @@ helloAjaxApp.controller("myCtrl", [ '$scope', '$http', function($scope, $http) {
             url : 'http://localhost:8080/HairSalon/SalonServer',
             method : "POST",
             data : {
-                'name' : $scope.name
+                'fName' : $scope.fName,
+                'lName' : $scope.lName,
+                'phone' : $scope.phone,
+                'email' : $scope.fName,
+                'service' : $scope.service
             }
         }).then(function(response) {
             console.log(response.data);
@@ -68,21 +79,21 @@ helloAjaxApp.controller("myCtrl", [ '$scope', '$http', function($scope, $http) {
         });
     };
         
-        $scope.sendPost2 = function() {
-            $http({
-                url : 'http://localhost:8080/HairSalon/SalonServer',
-                method : "POST",
-                data : {
-                    'giveSchedule' : 'true'
-                }
-            }).then(function(response) {
-                console.log(response.data);
-                $scope.schedule = response.data;
-            }, function(response) {
-                //fail case
-                console.log(response);
-                $scope.schedule = response;
-            });
+    $scope.sendPost2 = function() {
+        $http({
+            url : 'http://localhost:8080/HairSalon/SalonServer',
+            method : "POST",
+            data : {
+                'giveSchedule' : 'true'
+            }
+        }).then(function(response) {
+            console.log(response.data);
+            $scope.schedule = response.data;
+        }, function(response) {
+            //fail case
+            console.log(response);
+            $scope.schedule = response;
+        });
  
     };
 } ]);

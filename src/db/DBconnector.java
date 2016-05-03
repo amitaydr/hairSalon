@@ -66,7 +66,7 @@ public class DBconnector {
 		try {
 			rs = st.executeQuery(quary);
 			while(rs.next()){
-				ans += "date: " + rs.getString("date")+ " ; time: " + rs.getString("time") + "\n";
+				ans += "date: " + rs.getString("date")+ " , time: " + rs.getString("time") + ";\n";
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
