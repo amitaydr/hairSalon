@@ -39,8 +39,8 @@ public class DBconnector {
 		}
 	}
 		
-	public void addCustomer(int id, String name, String surname, String email){
-			String quary = "INSERT INTO hair.customers (id,name,surName,email) VALUE ("+id+",'"+name+"','"+surname+"','"+email+"')";
+	public void addCustomer(int id, String name, String email){
+			String quary = "INSERT INTO hair.customers (id,name,email) VALUE ("+id+",'"+name+"','"+email+"')";
 			try {
 				st.execute(quary);					
 				

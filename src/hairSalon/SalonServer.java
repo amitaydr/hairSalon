@@ -39,7 +39,7 @@ public class SalonServer extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		String fName = request.getParameter("fName");
+		/*String fName = request.getParameter("fName");
 		String lName = request.getParameter("lName");
 		String idString = request.getParameter("id");
 		int id=-1;
@@ -56,14 +56,14 @@ public class SalonServer extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		String prefix="";
 		if (!dbcon.customerExists(id)){
-			dbcon.addCustomer(id,fName,lName,email);
+			dbcon.addCustomer(id,fName,email);
 		}else prefix="welcome back, ";
 		if(id==-1){
 			prefix="id is not valid!";
 		}
 		out.println("<html><title>confirmation page</title><body><h1 align='center'>Thank you for choosing wix hair salon!</h1>"+
 				"<br>"+prefix+fName+" "+lName+" , your booking for: "+service+ " at: "+datetime+" is approved.<br> have a nice day! </body></html>");
-	}
+	*/}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
@@ -100,7 +100,6 @@ public class SalonServer extends HttpServlet {
 	
 	protected void form (JSONObject jObj, HttpServletResponse response) throws IOException{
 		String fname="";
-        String lname="";
         int phoneNo=-1;
         String email="";
         String service="";
@@ -109,9 +108,6 @@ public class SalonServer extends HttpServlet {
         try {
 			if (jObj.has("fName")){
 				fname = jObj.getString("fName");
-			}
-			if (jObj.has("lName")){
-				lname = jObj.getString("lName");
 			}
 			if (jObj.has("phone")){
 				phoneNo = jObj.getInt("phone");
@@ -124,7 +120,9 @@ public class SalonServer extends HttpServlet {
 			}
 			if (jObj.has("time")){
 				timeSt = jObj.getString("time");
-				date = new SimpleDateFormat("yyyy-MM-dd").parse(timeSt);
+				if (null!=timeSt){
+					date = new SimpleDateFormat("yyyy-MM-dd").parse(timeSt);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();       
@@ -132,14 +130,14 @@ public class SalonServer extends HttpServlet {
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
         String prefix="";
-        if(phoneNo != -1){
+        if(phoneNo != -1 && null != timeSt){
 			if (!dbcon.customerExists(phoneNo)){
-    			dbcon.addCustomer(phoneNo,fname,lname,email);
+    			dbcon.addCustomer(phoneNo,fname,email);
     			dbcon.addAppointment(phoneNo, new java.sql.Date(date.getTime()+1),service);
     		}else prefix="welcome back, ";
-			response.getWriter().write(prefix+ fname + " " +lname+ ", your booking for: " + service + " at: "+ " is approved!");
+			response.getWriter().write(prefix+ fname + ", your booking for: " + service + " at: "+ " is approved!");
         } else {
-        	response.getWriter().write("you must enter a phone number to schedule an appointment!");
+        	response.getWriter().write("you must enter a phone number and a date to schedule an appointment!");
         }
 	}
 

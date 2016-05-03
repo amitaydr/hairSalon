@@ -32,8 +32,11 @@
 	      console.log('Successful login for: ' + response.name);
 	      document.getElementById('status').innerHTML =
 	        'Thanks for logging in, ' + response.name + '!';
+	      document.getElementById('fname').value = response.name;
 	    });
-	  }
+	}
+  
+  
 </script>
 
 
@@ -41,10 +44,7 @@
 
  <div ng-controller="myCtrl" align="center" style="font-family:Comic Sans MS;">
  
-<!-- <div class="fb-login-button" data-max-rows="1" data-size="medium" data-show-faces="false" data-auto-logout-link="true"></div>
-<div id="status">
-</div>
- --> 
+
  <fb:login-button scope="public_profile,email" onlogin="testAPI();">
 </fb:login-button>
 
@@ -76,8 +76,7 @@
  -->
 	
         <form ng-submit="sendPost()">
-           First Name: <input type="text" ng-model="fName" placeholder="enter your first name" /><br><br>
-           Last Name: <input type="text" ng-model="lName" placeholder="enter your last name" /><br><br>
+           Name: <input type="text" id="fname" ng-model="fName" placeholder="enter your full name" /><br><br>
 			Phone no.: <input type="number" ng-model="phone" placeholder="enter your number" /><br><br>
 	  		Email: <input type="text" ng-model="email" placeholder="enter your email" /><br><br>
 	  		<label><input type="radio" ng-model="service" value="Bride treatment" />Bride treatment- 3 hours, 700 sheqels<br></label>
@@ -87,10 +86,10 @@
 			<input type="date" ng-model="time"> <br><br>
             <button type="submit">Send</button>
         </form>
-        <p> {{message}}
+        <p> {{message}}<br><br>
         
    
-
+ 		{{last_name}}
 
 <!--  <img id="myImage" src="salon.jpg" width="275" height="183" align="right">  -->
 
@@ -107,7 +106,6 @@ hairApp.controller("myCtrl", [ '$scope', '$http', function($scope, $http) {
             method : "POST",
             data : {
                 'fName' : $scope.fName,
-                'lName' : $scope.lName,
                 'phone' : $scope.phone,
                 'email' : $scope.fName,
                 'service' : $scope.service,
@@ -140,6 +138,7 @@ hairApp.controller("myCtrl", [ '$scope', '$http', function($scope, $http) {
         });
  
     };
+    
 } ]);
 </script>
 
