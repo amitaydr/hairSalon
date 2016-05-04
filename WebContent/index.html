@@ -10,6 +10,7 @@
 
 
 <script>
+//facebook code
   window.fbAsyncInit = function() {
     FB.init({
       appId      : '1581863508809739',
@@ -26,6 +27,7 @@
      fjs.parentNode.insertBefore(js, fjs);
    }(document, 'script', 'facebook-jssdk'));
   
+  //a function that takes user name when logging in via facebook and updates angular module
   function testAPI() {
 	    console.log('Welcome!  Fetching your information.... ');
 	    FB.api('/me', function(response) {
@@ -40,10 +42,6 @@
 	    	
 	    });
 	}
-  
-
-  
-  
 </script>
 
 
@@ -51,35 +49,35 @@
 
  <div ng-controller="myCtrl" align="center" style="font-family:Comic Sans MS;">
  
-
+<!-- facebook login button -->
  <fb:login-button scope="public_profile,email" onlogin="testAPI();">
 </fb:login-button>
 
 <div id="status">
 </div>
-        
+        <!-- the button that sends a request for booking slots -->
         <form ng-submit="sendPost2()">
             <button type="submit">Available booking times</button>
        	</form><br>
 	
+	    <!-- the form with details to fill -->
         <form ng-submit="sendPost()">
            Name: <input type="text" id="fname" ng-model="fName" placeholder="enter your full name" /><br><br>
 			Phone no.: <input type="number" ng-model="phone" placeholder="enter your number" /><br><br>
 	  		Email: <input type="text" ng-model="email" placeholder="enter your email" /><br><br>
 	  		<label><input type="radio" ng-model="service" value="Bride treatment" />Bride treatment- 3 hours, 700 sheqels<br></label>
 			<label><input type="radio" ng-model="service" value="Women haircut" />Women haircut- 2 hours, 200 sheqels<br></label>
-			<label><input type="radio" ng-model="service" value="Men haicut" />Men haircut- 1 hour, 50 sheqels<br><br>	</label>
+			<label><input type="radio" ng-model="service" value="Men haircut" />Men haircut- 1 hour, 50 sheqels<br><br>	</label>
+			<button type="submit">Send</button><br><br>
+			Available Booking Times: <br><br>
 			<div class="" ng-repeat="(key, val) in schedule">
       		 <label> <input type="radio" ng-model="$parent.slotIndex" ng-value=key />{{val}}</label>
      	   </div>
-            <button type="submit">Send</button>
+            
         </form>
-        <p> {{message}}<br><br>
+        <confirm> {{message}}<br><br>
         
-     <!--    <form ng-submit="sendPost2()">
-            <button type="submit">Available booking times</button>
-        </form>
-        <br> --> 
+
           
         
 
@@ -89,7 +87,8 @@ var hairApp = angular.module("myApp", []);
 hairApp.controller("myCtrl", [ '$scope', '$http', function($scope, $http) {
  
     $http.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded; charset=utf-8";
-     
+    
+    //function that handels sending the form data
     $scope.sendPost = function() {
         $http({
             url : 'http://localhost:8080/HairSalon/SalonServer',
@@ -104,13 +103,16 @@ hairApp.controller("myCtrl", [ '$scope', '$http', function($scope, $http) {
         }).then(function(response) {
             console.log(response.data);
             $scope.message = response.data;
+            window.alert(response.data);
         }, function(response) {
             //fail case
             console.log(response);
             $scope.message = response;
+            window.alert(response);
         });
     };
-        
+      
+    //function that sends a request for available time slots
     $scope.sendPost2 = function() {
         $http({
             url : 'http://localhost:8080/HairSalon/SalonServer',

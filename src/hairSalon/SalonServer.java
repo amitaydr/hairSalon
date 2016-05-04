@@ -120,7 +120,7 @@ public class SalonServer extends HttpServlet {
     			dbcon.addCustomer(phoneNo,fname,email);
     		}else prefix="welcome back, ";
 			hairService ser = new hairService(service);
-			success = dbcon.addAppointment(phoneNo, slotIndex ,ser);
+			success = dbcon.addAppointment(phoneNo, slotIndex ,ser); //the database uses phoneNo as primary key (so dbcon uses it as id)
 			if(success) response.getWriter().write(prefix+ fname + ", your booking for: " + service+ " is approved!");
 			else response.getWriter().write("this time slot is not availble, or your service needs more time");
 			

@@ -1,0 +1,25 @@
+the code assumes mySQL username 'root' password 'root1'. to change that go to DBConnector.java line 28
+
+the mysql database that this app connects is called "hair".
+it has two tables:
+"customers"- with fields : "id"(INT, PK, NN)  "name"(VARCHAR) "email"(VARCHAR)
+"schedule"- with fields : "dateTime"(DATETIME, NN) "customerID"(INT) "service"(VARCHAR) isFreeSlot(INT, NN, default value-0) index (INT, PK, NN, auto increment)
+
+*******the commands to create this database:********
+
+CREATE SCHEMA `hair` ;
+
+CREATE TABLE `hair`.`customers` (
+  `id` INT NOT NULL,
+  `name` VARCHAR(45) NULL,
+  `email` VARCHAR(45) NULL,
+  PRIMARY KEY (`id`));
+
+CREATE TABLE `hair`.`schedule` (
+  `dateTime` DATETIME NOT NULL,
+  `customerID` INT NULL,
+  `service` VARCHAR(45) NULL,
+  `isFreeSlot` INT NOT NULL DEFAULT 0,
+  `index` INT NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`index`));
+
