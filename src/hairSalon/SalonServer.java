@@ -2,10 +2,7 @@ package hairSalon;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Date;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -25,7 +22,6 @@ import org.json.*;
 public class SalonServer extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     DBconnector dbcon;
-    int i =7;
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -39,31 +35,7 @@ public class SalonServer extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		/*String fName = request.getParameter("fName");
-		String lName = request.getParameter("lName");
-		String idString = request.getParameter("id");
-		int id=-1;
-		if(idString!=""){
-			try{
-			 id = Integer.parseInt(idString);
-			}catch (NumberFormatException ex){
-				ex.printStackTrace();
-			}
 		}
-		String service = request.getParameter("service");
-		String email = request.getParameter("email");
-		String datetime = request.getParameter("time");
-		PrintWriter out = response.getWriter();
-		String prefix="";
-		if (!dbcon.customerExists(id)){
-			dbcon.addCustomer(id,fName,email);
-		}else prefix="welcome back, ";
-		if(id==-1){
-			prefix="id is not valid!";
-		}
-		out.println("<html><title>confirmation page</title><body><h1 align='center'>Thank you for choosing wix hair salon!</h1>"+
-				"<br>"+prefix+fName+" "+lName+" , your booking for: "+service+ " at: "+datetime+" is approved.<br> have a nice day! </body></html>");
-	*/}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
@@ -77,65 +49,81 @@ public class SalonServer extends HttpServlet {
             sb.append(str);
         }
         JSONObject jObj;
-        String scheduleReq="";
         try {
 			jObj = new JSONObject(sb.toString());
 			if (jObj.has("giveSchedule")){
-				scheduleReq = jObj.getString("giveSchedule");
+				schedule(response);     //handle a schedule request
 			} else {
 				form (jObj, response);  //handle a form
 			}
 		} catch (Exception e) {
 			e.printStackTrace();       
-		}
-        response.setContentType("text/plain");
-        response.setCharacterEncoding("UTF-8");
-        if(scheduleReq!=""){
-        	String slots=dbcon.getTimeSlots();
-        	response.getWriter().write(slots);
-        }
-		  
+		}  
 	}
 	
+	/**
+	 * handles a request for open time slots
+	 * @param response needed in order to write back
+	 * @throws IOException
+	 */
+	protected void schedule (HttpServletResponse response) throws IOException{
+		response.setContentType("application/json");
+		HashMap<Integer,String> slots=dbcon.getTimeSlots();
+		if (slots.size()==0){
+			dbcon.newWeek ();
+			System.out.println("calling newWeek");
+			schedule(response);
+		}else{
+			JSONObject jo = new JSONObject(slots);
+	    	response.getWriter().write(jo.toString());
+		}
+	}
 	
+	/**
+	 * Handles form data accepted from client and sends appropriate data to database via DBConnector
+	 * @param jObj the JSON with the data
+	 * @param response needed in order to write back
+	 * @throws IOException
+	 */
 	protected void form (JSONObject jObj, HttpServletResponse response) throws IOException{
+		boolean success = false;
 		String fname="";
         int phoneNo=-1;
         String email="";
         String service="";
-        String timeSt="";
-        java.util.Date date = null;
+        int slotIndex=-1;
         try {
 			if (jObj.has("fName")){
 				fname = jObj.getString("fName");
-			}
+			}else System.out.println("no fname field in recieved json");
 			if (jObj.has("phone")){
 				phoneNo = jObj.getInt("phone");
-			}
+			}else System.out.println("no phone field in recieved json");
 			if (jObj.has("email")){
 				email = jObj.getString("email");
-			}
+			}else System.out.println("no email field in recieved json");
 			if (jObj.has("service")){
 				service = jObj.getString("service");
-			}
-			if (jObj.has("time")){
-				timeSt = jObj.getString("time");
-				if (null!=timeSt){
-					date = new SimpleDateFormat("yyyy-MM-dd").parse(timeSt);
-				}
-			}
+			}else System.out.println("no service field in recieved json");
+			if (jObj.has("slotIndex")){
+				slotIndex = jObj.getInt("slotIndex");
+				System.out.println("slotIndex recived: "+slotIndex);
+			}else System.out.println("no slotIndex field in recieved json");
 		} catch (Exception e) {
 			e.printStackTrace();       
 		}
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
         String prefix="";
-        if(phoneNo != -1 && null != timeSt){
+        if(phoneNo != -1 && slotIndex != -1){
 			if (!dbcon.customerExists(phoneNo)){
     			dbcon.addCustomer(phoneNo,fname,email);
-    			dbcon.addAppointment(phoneNo, new java.sql.Date(date.getTime()+1),service);
     		}else prefix="welcome back, ";
-			response.getWriter().write(prefix+ fname + ", your booking for: " + service + " at: "+ " is approved!");
+			hairService ser = new hairService(service);
+			success = dbcon.addAppointment(phoneNo, slotIndex ,ser);
+			if(success) response.getWriter().write(prefix+ fname + ", your booking for: " + service+ " is approved!");
+			else response.getWriter().write("this time slot is not availble, or your service needs more time");
+			
         } else {
         	response.getWriter().write("you must enter a phone number and a date to schedule an appointment!");
         }

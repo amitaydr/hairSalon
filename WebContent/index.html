@@ -6,7 +6,7 @@
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
 </head>
 <h1 align="center" style="font-family:Comic Sans MS;">Welcome to Wix Hair Salon!</h1>
-<body background = "background.jpg">
+<body background = "flower5.jpg">
 
 
 <script>
@@ -32,9 +32,16 @@
 	      console.log('Successful login for: ' + response.name);
 	      document.getElementById('status').innerHTML =
 	        'Thanks for logging in, ' + response.name + '!';
-	      document.getElementById('fname').value = response.name;
+	      var e = document.getElementById("fname");
+	      e.value = response.name;
+    	  var scope = angular.element(e).scope();
+    	  scope.fName = response.name;
+    	  scope.$digest();
+	    	
 	    });
 	}
+  
+
   
   
 </script>
@@ -49,31 +56,11 @@
 </fb:login-button>
 
 <div id="status">
-***
 </div>
+        
         <form ng-submit="sendPost2()">
             <button type="submit">Available booking times</button>
-        </form>
-        <br> 
-        {{schedule}} <br> <br> 
-<!-- 
-<form name="myForm" method="get" action="SalonServer">
-	First Name: <input type="text" name="fName" placeholder="enter your first name"><br><br>
-	Last Name: <input type="text" name="lName" placeholder="enter your last name"><br><br>
-	Phone no.: <input type="number" name="id" placeholder="enter your number"><br><br>
-	Email: <input type="text" name="email" placeholder="enter your email"><br><br>
-	Choose the service you would like to have: <br> <br>
-	<input type="radio" name="service" value="Bride treatment" checked>Bride treatment- 3 hours, 700 sheqels<br>
-	<input type="radio" name="service" value="Women haircut" >Women haircut- 2 hours, 200 sheqels<br>
-	<input type="radio" name="service" value="Men haicut" >Men haircut- 1 hour, 50 sheqels<br><br>	
-	Time:  <br>
-	<input type="dateTime" name="time"> <br><br>
-
-	<input type="submit" value="cheers"><br>
-	
-
-</form><br>
- -->
+       	</form><br>
 	
         <form ng-submit="sendPost()">
            Name: <input type="text" id="fname" ng-model="fName" placeholder="enter your full name" /><br><br>
@@ -82,16 +69,19 @@
 	  		<label><input type="radio" ng-model="service" value="Bride treatment" />Bride treatment- 3 hours, 700 sheqels<br></label>
 			<label><input type="radio" ng-model="service" value="Women haircut" />Women haircut- 2 hours, 200 sheqels<br></label>
 			<label><input type="radio" ng-model="service" value="Men haicut" />Men haircut- 1 hour, 50 sheqels<br><br>	</label>
-             Time:  <br>
-			<input type="date" ng-model="time"> <br><br>
+			<div class="" ng-repeat="(key, val) in schedule">
+      		 <label> <input type="radio" ng-model="$parent.slotIndex" ng-value=key />{{val}}</label>
+     	   </div>
             <button type="submit">Send</button>
         </form>
         <p> {{message}}<br><br>
         
-   
- 		{{last_name}}
-
-<!--  <img id="myImage" src="salon.jpg" width="275" height="183" align="right">  -->
+     <!--    <form ng-submit="sendPost2()">
+            <button type="submit">Available booking times</button>
+        </form>
+        <br> --> 
+          
+        
 
 <script>
 var hairApp = angular.module("myApp", []);
@@ -107,9 +97,9 @@ hairApp.controller("myCtrl", [ '$scope', '$http', function($scope, $http) {
             data : {
                 'fName' : $scope.fName,
                 'phone' : $scope.phone,
-                'email' : $scope.fName,
+                'email' : $scope.email,
                 'service' : $scope.service,
-                'time' : $scope.time
+                'slotIndex' : $scope.slotIndex
             }
         }).then(function(response) {
             console.log(response.data);
@@ -138,6 +128,7 @@ hairApp.controller("myCtrl", [ '$scope', '$http', function($scope, $http) {
         });
  
     };
+    
     
 } ]);
 </script>
